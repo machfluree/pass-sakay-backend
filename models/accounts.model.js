@@ -16,6 +16,11 @@ const accountSchema = new mongoose.Schema({
         required: true,
         unique: true,
     },
+    userRole: {
+        type: String,
+        required: true,
+        lowercase: true,
+    },
     password: {
         type: String,
         required: true,

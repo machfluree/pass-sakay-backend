@@ -25,6 +25,16 @@ const passengerSchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    status: {
+        type: Boolean,
+        required: true,
+        default: true
+    },
+    isApproved: {
+        type: Boolean,
+        required: true,
+        default: false
+    },
     dateModified: {
         type: Date,
         required: true,

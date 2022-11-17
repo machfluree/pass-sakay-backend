@@ -9,6 +9,7 @@ require("./helpers/database.helper");
 const accountRoute = require("./routes/accounts.routes");
 const authRoute = require("./routes/_auth.routes");
 const passengerRoute = require("./routes/passengers.routes");
+const busDriverRoute = require("./routes/bus-drivers.routes");
 
 const app = express();
 app.use(cors());
@@ -20,6 +21,7 @@ const base_path = "/pass-sakay-v1/api";
 app.use("/pass-sakay-v1/api", accountRoute);
 app.use("/pass-sakay-v1/api", authRoute);
 app.use("/pass-sakay-v1/api", passengerRoute);
+app.use("/pass-sakay-v1/api", busDriverRoute);
 
 //error handler
 app.use(async (req, res, next) => {

@@ -29,6 +29,12 @@ route.post("/accounts", async (req, res) => {
 
     if (UserRole.toLowerCase() === "passenger")
       return res.status(500).json({ message: "Passengers doesn't require an account." });
+    
+    const agg = [{ $match: { $or: [{ _userID: UserID }, { username: Username }] } }]
+    const accountMatched = await Account.aggregate(agg);
+    if (accountMatched.length > 0) {
+      return res.status(500).json({ message: "User already has an account." });
+    }
 
     const hashedPassword = await _bcrypt.hash(Password, 8);
 

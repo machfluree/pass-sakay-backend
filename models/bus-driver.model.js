@@ -1,6 +1,6 @@
 const mongoose = require('mongoose')
 const AddressModel = require('./address.model')
-const passengerSchema = new mongoose.Schema({
+const busDriverSchema = new mongoose.Schema({
     busName: {
         type: String,
         required: true
@@ -9,19 +9,19 @@ const passengerSchema = new mongoose.Schema({
         type: String,
         required: true
     },
-    province: {
+    busProvince: {
         type: String,
         required: false
     },
-    inChargeOfAccount: {
+    operatorFullName: {
         type: String,
         required: true
     },
-    position: {
+    operatorPosition: {
         type: String,
         required: true
     },
-    phoneNumber: {
+    operatorPhoneNumber: {
         type: String,
         required: true
     },
@@ -37,8 +37,7 @@ const passengerSchema = new mongoose.Schema({
     },
     dateModified: {
         type: Date,
-        required: true,
-        default: Date.now()
+        required: false,
     },
     dateAdded: {
         type: Date,
@@ -47,4 +46,4 @@ const passengerSchema = new mongoose.Schema({
     },
 });
 
-module.exports = mongoose.model('Passenger', passengerSchema);
+module.exports = mongoose.model('BusDriver', busDriverSchema);

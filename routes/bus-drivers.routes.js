@@ -68,7 +68,7 @@ route.post("/bus-drivers", async (req, res) => {
     const agg = [{ $match: { $or: [{ _userID: UserID }, { username: Username }] } }]
     const accountMatched = await Account.aggregate(agg);
     if (accountMatched.length > 0) {
-      return res.status(500).json({ message: "User already has an account." });
+      return res.status(400).json({ message: "User already has an account." });
     }
     const hashedPassword = await _bcrypt.hash(Password, 8);
     const account = new Account({

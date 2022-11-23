@@ -5,6 +5,7 @@ const route = express.Router();
 // const moment = require("moment")
 const date = new Date();
 const Passenger = require("../models/passenger.model");
+const Account = require("../models/accounts.model");
 const { checkAuthHelper } = require("../helpers/checkAuth.helper");
 
 // get passengers
@@ -43,9 +44,12 @@ route.post("/passengers", async (req, res) => {
       Gender,
       Birthdate,
       ActiveContactNumber,
-      ActiveEmailAdd,
       CurrentAddress,
       HomeAddress,
+      //
+      ActiveEmailAdd,
+      Username,
+      Password,
     } = req.body;
 
     const passenger = new Passenger({
@@ -68,7 +72,25 @@ route.post("/passengers", async (req, res) => {
         secret_id: hashedPassengerId,
         currentAddress: newPassenger.currentAddress
     }
+
+    // TODO: save account here
+    const UserID = newPassenger._id;
+    const agg = [{ $match: { $or: [{ _userID: UserID }, { username: Username }] } }]
+    const accountMatched = await Account.aggregate(agg);
+    if (accountMatched.length > 0) {
+      return res.status(400).json({ message: "User already has an account." });
+    }
+    const hashedPassword = await _bcrypt.hash(Password, 8);
+    const account = new Account({
+      _userID: UserID,
+      email: ActiveEmailAdd,
+      username: Username,
+      userRole: 'passenger',
+      password: hashedPassword,
+    });
+    await account.save();
     res.status(201).json({passengerData: passengerData});
+
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to save passenger" });

@@ -10,7 +10,6 @@ module.exports = {
     _jwt.verify(token, process.env.ACCESS_TOKEN_SK, (err, user) => {
       if (err) res.sendStatus(401);
       req.user = user;
-      // console.log("Authorized!", user)
       next();
     });
   },

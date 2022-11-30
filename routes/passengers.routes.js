@@ -11,7 +11,7 @@ const { checkAuthHelper } = require("../helpers/checkAuth.helper");
 // get passengers
 route.get(
   "/passengers",
-  [checkAuthHelper, getPassengerMiddleware],
+  [checkAuthHelper],
   async (req, res) => {
     try {
       const passengers = await Passenger.find();
@@ -27,9 +27,9 @@ route.get(
 // get a user
 route.get(
   "/passengers/:id",
-  [checkAuthHelper, getPassengerMiddleware],
+  [getPassengerMiddleware],
   (req, res) => {
-    console.log("fasdfad", req.user);
+    console.log("get one passenger", req.passenger);
     res.send(res.passenger);
   },
 );
@@ -46,7 +46,6 @@ route.post("/passengers", async (req, res) => {
       ActiveContactNumber,
       CurrentAddress,
       HomeAddress,
-      //
       ActiveEmailAdd,
       Username,
       Password,
@@ -66,31 +65,43 @@ route.post("/passengers", async (req, res) => {
     });
 
     const newPassenger = await passenger.save();
-    const hashedPassengerId = await _bcrypt.hash(newPassenger._id.toString(), 8);
+    // const hashedPassengerId = await _bcrypt.hash(newPassenger._id.toString(), 8);
     const passengerData = {
         fullname: newPassenger.lastname + ", " + newPassenger.firstname + " " + newPassenger.middlename,
-        secret_id: hashedPassengerId,
+        secret_id: _id.toString(),
         currentAddress: newPassenger.currentAddress
     }
-
-    // TODO: save account here
     const UserID = newPassenger._id;
-    const agg = [{ $match: { $or: [{ _userID: UserID }, { username: Username }] } }]
+    const agg = [
+      { 
+        $match: {
+           $or: [
+            { _userID: UserID },
+            { username: Username },
+            { email: ActiveEmailAdd }
+          ] 
+        } 
+      }
+    ]
     const accountMatched = await Account.aggregate(agg);
     if (accountMatched.length > 0) {
       return res.status(400).json({ message: "User already has an account." });
+    } else {
+      const hashedPassword = await _bcrypt.hash(Password, 8);
+      const account = new Account({
+        _userID: UserID,
+        email: ActiveEmailAdd,
+        username: Username,
+        userRole: 'passenger',
+        password: hashedPassword,
+      });
+      const newPassengerAccount = await account.save();
+      if (newPassengerAccount) {
+        res.status(201).json({passengerData: passengerData});
+      } else {
+        res.status(400).json({message: "Passenger account not created."})
+      }
     }
-    const hashedPassword = await _bcrypt.hash(Password, 8);
-    const account = new Account({
-      _userID: UserID,
-      email: ActiveEmailAdd,
-      username: Username,
-      userRole: 'passenger',
-      password: hashedPassword,
-    });
-    await account.save();
-    res.status(201).json({passengerData: passengerData});
-
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to save passenger" });
@@ -125,7 +136,7 @@ route.put(
 async function getPassengerMiddleware(req, res, next) {
   let passenger;
   try {
-    passenger = await passenger.findById(req.params.id);
+    passenger = await Passenger.findById(req.params.id);
     if (!passenger)
       return res.status(404).json({ message: "passenger not found." });
   } catch (error) {

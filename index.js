@@ -10,6 +10,7 @@ const accountRoute = require("./routes/accounts.routes");
 const authRoute = require("./routes/_auth.routes");
 const passengerRoute = require("./routes/passengers.routes");
 const busDriverRoute = require("./routes/bus-drivers.routes");
+const scannedQRRoute = require("./routes/scanned-qr.routes");
 
 const app = express();
 app.use(cors());
@@ -17,11 +18,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // routes
-const base_path = "/pass-sakay-v1/api";
-app.use("/pass-sakay-v1/api", accountRoute);
 app.use("/pass-sakay-v1/api", authRoute);
+app.use("/pass-sakay-v1/api", accountRoute);
 app.use("/pass-sakay-v1/api", passengerRoute);
 app.use("/pass-sakay-v1/api", busDriverRoute);
+app.use("/pass-sakay-v1/api", scannedQRRoute);
 
 //error handler
 app.use(async (req, res, next) => {

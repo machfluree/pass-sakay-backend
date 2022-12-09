@@ -68,7 +68,7 @@ route.post("/passengers", async (req, res) => {
     // const hashedPassengerId = await _bcrypt.hash(newPassenger._id.toString(), 8);
     const passengerData = {
         fullname: newPassenger.lastname + ", " + newPassenger.firstname + " " + newPassenger.middlename,
-        secret_id: _id.toString(),
+        secret_id: newPassenger._id.toString(),
         currentAddress: newPassenger.currentAddress
     }
     const UserID = newPassenger._id;

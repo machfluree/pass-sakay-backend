@@ -18,8 +18,8 @@ route.get("/bus-drivers", async (req, res) => {
   }
 });
 
-// get a user
-route.get("/bus-drivers/:id", [checkAuthHelper, getBusDriverMiddleware], (req, res) => {
+// get a bus-drivers
+route.get("/bus-drivers/:id", [getBusDriverMiddleware], (req, res) => {
   console.log("user token", req.user)
   res.send(res.busDriver);
 });
@@ -89,7 +89,7 @@ route.post("/bus-drivers", async (req, res) => {
 });
 
 // update a user
-route.put("/bus-drivers/:id", [checkAuthHelper, getBusDriverMiddleware], async (req, res) => {
+route.put("/bus-drivers/:id", [getBusDriverMiddleware], async (req, res) => {
   const { UserID, Email, Username, Password, Status } = req.body;
 
   if (UserID) res.busDriver._userID = UserID;

@@ -18,13 +18,13 @@ route.get("/scanned-qr", async (req, res) => {
 });
 
 // get a user
-route.get("/passengers/:id", [getPassengerMiddleware], (req, res) => {
+route.get("/scanned-qr/:id", [getPassengerMiddleware], (req, res) => {
   console.log("get one passenger", req.passenger);
   res.send(res.passenger);
 });
 
 // create a user
-route.post("/passengers", async (req, res) => {
+route.post("/scanned-qr", async (req, res) => {
   try {
     const {
       passengerId,
@@ -67,8 +67,8 @@ route.post("/passengers", async (req, res) => {
 
 // update a user
 route.put(
-  "/passengers/:id",
-  [checkAuthHelper, getPassengerMiddleware],
+  "/scanned-qr/:id",
+  [getPassengerMiddleware],
   async (req, res) => {
     const { UserID, Email, Username, Password, Status } = req.body;
 

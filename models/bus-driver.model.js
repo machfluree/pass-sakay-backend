@@ -15,15 +15,15 @@ const busDriverSchema = new mongoose.Schema({
     },
     operatorFullName: {
         type: String,
-        required: true
+        required: false
     },
     operatorPosition: {
         type: String,
-        required: true
+        required: false
     },
     operatorPhoneNumber: {
         type: String,
-        required: true
+        required: false
     },
     status: {
         type: Boolean,

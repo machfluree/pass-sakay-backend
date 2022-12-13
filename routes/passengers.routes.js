@@ -11,7 +11,6 @@ const { checkAuthHelper } = require("../helpers/checkAuth.helper");
 // get passengers
 route.get(
   "/passengers",
-  [checkAuthHelper],
   async (req, res) => {
     try {
       const passengers = await Passenger.find();

@@ -10,64 +10,18 @@ const { checkAuthHelper } = require("../helpers/checkAuth.helper");
 // get trip schedules
 route.get("/trip-schedules", async (req, res) => {
   try {
-    const agg = [
-      {
-        $lookup: {
-          from: "busdrivers",
-          localField: "busAccount",
-          foreignField: "_id",
-          as: "busAccounDetails",
-        },
-      },
-    ];
     const tripSchedules = await TripSchedule.find().populate("busAccount");
     res.json(tripSchedules)
-    // TripSchedule.find({} , (err,records)=>{
-    //     if(records) return records
-    //     else throw Error("no records found")
-    // })
-    // .populate('busAccount')
-    // .skip(0).limit(20)
-    // .exec()
-
-    // TripSchedule.find().populate({
-    //     "path": "BusDriver",
-    //     "match": { "busAccount": "_id" }
-    // }).exec(function(err,entries) {
-    //    entries = entries.filter(function(entry) {
-    //        return entry.busAccount != null;
-    //    });
-    // });
-
     console.log("get all trip schedules worked.");
-
-    // if (tripSchedules.length) {
-    //     const parsedTripSchedules = [];
-    //     tripSchedules.forEach(async (tripSched) => {
-    //         const busAccount = await BusDriver.findById(tripSched.busAccount);
-    //         // console.log(busAccount.busName)
-    //         parsedTripSchedules.push({
-    //             name: tripSched.name,
-    //             busName: busAccount.busName,
-    //             daysRoutine: tripSched.daysRoutine,
-    //             startTime: tripSched.startTime,
-    //             endTime: tripSched.endTime,
-    //             startingPoint: tripSched.startingPoint,
-    //             finishingPoint: tripSched.finishingPoint,
-    //             status: tripSched.status,
-    //         })
-    //     });
-    //     res.status(200).json(parsedTripSchedules);
-    // }
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error_message: error.message });
+    res.status(500).json({ message: error.message });
   }
 });
 
 // get a bus-drivers
 route.get("/trip-schedules/:id", [getTripScheduleMiddleware], (req, res) => {
-  console.log("user token", req.user);
+  console.log("user token", req.tripSchedule);
   res.send(res.tripSchedule);
 });
 
@@ -95,7 +49,7 @@ route.post("/trip-schedules", async (req, res) => {
     )
       return res
         .status(500)
-        .json({ error: "Missing required fields on payload." });
+        .json({ message: "Missing required fields on payload." });
 
     const tripSchedule = new TripSchedule({
       name: Name,
@@ -111,7 +65,7 @@ route.post("/trip-schedules", async (req, res) => {
     res.status(201).json(newTripSchedule);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error_message: error.message });
+    res.status(500).json({ message: error.message });
   }
   res.send();
 });
@@ -147,7 +101,7 @@ route.put(
       res.status(200).json(updateTripSchedule);
     } catch (error) {
       console.error(error);
-      res.status(400).json({ error_message: error.message });
+      res.status(400).json({ message: error.message });
     }
   },
 );
@@ -155,12 +109,23 @@ route.put(
 async function getTripScheduleMiddleware(req, res, next) {
   let tripSchedule;
   try {
-    tripSchedule = await TripSchedule.findById(req.params.id);
+    const agg = [
+      {
+        $lookup: {
+          from: "busdrivers",
+          localField: "busAccount",
+          foreignField: "_id",
+          as: "busAccounDetails",
+        },
+      },
+    ];
+    const tripSchedules = await TripSchedule.find().populate("busAccount")
+    tripSchedule = tripSchedules.find(tripSched => tripSched._id == req.params.id);
     if (!tripSchedule)
       return res.status(404).json({ message: "Trip Schedule not found." });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ error_message: error.message });
+    return res.status(500).json({ message: error.message });
   }
   res.tripSchedule = tripSchedule;
   next();

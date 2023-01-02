@@ -14,7 +14,7 @@ route.get("/bus-drivers", async (req, res) => {
     res.json(busDrivers);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error_message: error.message });
+    res.status(500).json({ message: error.message });
   }
 });
 
@@ -83,20 +83,37 @@ route.post("/bus-drivers", async (req, res) => {
     res.status(201).json(newBusDriver);
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error_message: error.message });
+    res.status(500).json({ message: error.message });
   }
   res.send();
 });
 
 // update a user
 route.put("/bus-drivers/:id", [getBusDriverMiddleware], async (req, res) => {
-  const { UserID, Email, Username, Password, Status } = req.body;
+  const { 
+    // basic info
+    BusName, 
+    BusNumber, 
+    BusProvince, 
+    OperatorFullName, 
+    OperatorPosition,
+    OperatorPhoneNumber,
+    Status,
+    isApproved
+    // account info
+    // Email,
+    // Password,
+    // Username
+  } = req.body;
 
-  if (UserID) res.busDriver._userID = UserID;
-  if (Email) res.busDriver.email = Email;
-  if (Username) res.busDriver.username = Username;
-  if (Password) res.busDriver.password = Password;
-  if (Status !== null) res.busDriver.status = Status;
+  if (BusName) res.busDriver.busName = BusName;
+  if (BusNumber) res.busDriver.busNumber = BusNumber;
+  if (BusProvince) res.busDriver.busProvince = BusProvince;
+  if (OperatorFullName) res.busDriver.operatorFullName = OperatorFullName;
+  if (OperatorPosition) res.busDriver.operatorPosition = OperatorPosition;
+  if (OperatorPhoneNumber) res.busDriver.operatorPhoneNumber = OperatorPhoneNumber;
+  if (Status !== null && Status !== undefined) res.busDriver.status = Status;
+  if (isApproved !== null && isApproved !== undefined ) res.busDriver.isApproved = isApproved;
   res.busDriver.dateModified = Date.now();
 
   try {
@@ -104,7 +121,7 @@ route.put("/bus-drivers/:id", [getBusDriverMiddleware], async (req, res) => {
     res.status(200).json(updateBusDriver);
   } catch (error) {
     console.error(error);
-    res.status(400).json({ error_message: error.message });
+    res.status(400).json({ message: error.message });
   }
 });
 
@@ -112,10 +129,10 @@ async function getBusDriverMiddleware(req, res, next) {
   let busDriver;
   try {
     busDriver = await BusDriver.findById(req.params.id)
-    if (!accoubusDrivernt) return res.status(404).json({ message: "Bus Driver not found." });
+    if (!busDriver) return res.status(404).json({ message: "Bus Driver not found." });
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ error_message: error.message });
+    return res.status(500).json({ message: error.message });
   }
   res.busDriver = busDriver;
   next();

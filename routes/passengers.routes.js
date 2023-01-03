@@ -60,7 +60,6 @@ route.post("/passengers", async (req, res) => {
       {
         $match: {
           $or: [
-            { _userID: UserID },
             { username: Username },
             { email: ActiveEmailAdd },
           ],

@@ -9,19 +9,26 @@ const ScannedQr = require("../models/scanned-qr.model");
 
 route.get("/scanned-qr", async (req, res) => {
   try {
-    const scannedQR = await ScannedQr.find();
-    console.log("get all scanned qr worked.");
-    res.json(scannedQR);
+    const tripHistory = await ScannedQr
+      .find()
+      .populate("busAccount")
+      .populate("passengerAccount")
+      .populate("tripSched");
+    if (!tripHistory) {
+      return res.status(404).json({ message: "System Error: Failed to fetch data." })
+    } else {
+      res.status(200).json(tripHistory)
+    }
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error_message: error.message });
+    return res.status(500).json({ message: "System Error: Failed to fetch data." });
   }
 });
 
 // get a user
-route.get("/scanned-qr/:id", [getPassengerMiddleware], (req, res) => {
-  console.log("get one scaned qr", req.passenger);
-  res.send(res.passenger);
+route.get("/scanned-qr/:id", [getScannedQRMiddleware], (req, res) => {
+  console.log("get one scaned qr", req.scannedQR);
+  res.send(res.scannedQR);
 });
 
 route.get("/scanned-qr/trip-history/:passenger_id", async (req, res) => {
@@ -35,8 +42,26 @@ route.get("/scanned-qr/trip-history/:passenger_id", async (req, res) => {
     if (!passengerTripHistory) {
       return res.status(404).json({ message: "System Error: Failed to fetch data." })
     } else {
-      
       res.status(200).json(passengerTripHistory)
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "System Error: Failed to fetch data." });
+  }
+});
+
+route.get("/scanned-qr/bus-account/:busAccountId", async (req, res) => {
+  try {
+    const busAccountId = mongoose.Types.ObjectId(req.params.busAccountId)
+    const busAccountTripHistory = await ScannedQr
+      .find({ busAccount: busAccountId })
+      .populate("busAccount")
+      .populate("passengerAccount")
+      .populate("tripSched");
+    if (!busAccountTripHistory) {
+      return res.status(404).json({ message: "System Error: Failed to fetch data." })
+    } else {
+      res.status(200).json(busAccountTripHistory)
     }
   } catch (error) {
     console.error(error);
@@ -81,7 +106,7 @@ route.post("/scanned-qr", async (req, res) => {
 // update a user
 route.put(
   "/scanned-qr/:id",
-  [getPassengerMiddleware],
+  [getScannedQRMiddleware],
   async (req, res) => {
     const { UserID, Email, Username, Password, Status } = req.body;
 
@@ -102,17 +127,17 @@ route.put(
   },
 );
 
-async function getPassengerMiddleware(req, res, next) {
-  let passenger;
+async function getScannedQRMiddleware(req, res, next) {
+  let scannedQR;
   try {
-    passenger = await Passenger.findById(req.params.id);
-    if (!passenger)
-      return res.status(404).json({ message: "passenger not found." });
+    scannedQR = await ScannedQr.findById(req.params.id);
+    if (!scannedQR)
+      return res.status(404).json({ message: "scannedQR not found." });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error_message: error.message });
   }
-  res.passenger = passenger;
+  res.scannedQR = scannedQR;
   next();
 }
 

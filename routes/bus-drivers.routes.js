@@ -78,7 +78,7 @@ route.post("/bus-drivers", async (req, res) => {
       const newBusDriver = await busDriver.save();
       const hashedPassword = await _bcrypt.hash(Password, 8);
       const account = new Account({
-        _userID: UserID,
+        _userID: newBusDriver._id,
         email: Email,
         username: Username,
         userRole: "bus-driver",

@@ -6,11 +6,54 @@ const route = express.Router();
 const date = new Date();
 const { checkAuthHelper } = require("../helpers/checkAuth.helper");
 const ScannedQr = require("../models/scanned-qr.model");
+const moment = require('moment');
 
 route.get("/scanned-qr", async (req, res) => {
   try {
     const tripHistory = await ScannedQr
       .find()
+      .populate("busAccount")
+      .populate("passengerAccount")
+      .populate("tripSched");
+    if (!tripHistory) {
+      return res.status(404).json({ message: "System Error: Failed to fetch data." })
+    } else {
+      res.status(200).json(tripHistory)
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "System Error: Failed to fetch data." });
+  }
+});
+
+route.get("/scanned-qr/reports", async (req, res) => {
+  try {
+    let query = {
+      leave: { $exists: false }
+    };
+    if (req.body.busAccount) {
+      query.busAccount = req.body.busAccount
+    }
+    if (req.body.passengerAccount) {
+      query.passengerAccount = req.body.passengerAccount
+    }
+    if (req.body.today) {
+      query.date = {
+        $gte: moment(req.body.today).hours(0).minutes(0).milliseconds(0),
+        $lte: moment(req.body.today).hours(59).minutes(59).milliseconds(59)
+      }
+    }
+    if (req.body.dateFrom && req.body.dateTo) {
+      query.date = {
+        $gte: moment(req.body.dateTo).hours(0).minutes(0).milliseconds(0),
+        $lte: moment(req.body.dateTo).hours(59).minutes(59).milliseconds(59)
+      }
+    }
+
+    // return res.status(404).json({ message: query })
+
+    const tripHistory = await ScannedQr
+      .find(query)
       .populate("busAccount")
       .populate("passengerAccount")
       .populate("tripSched");
@@ -76,16 +119,22 @@ route.post("/scanned-qr", async (req, res) => {
       passengerAccount,
       tripType,
       busAccount,
+      temperature,
+      tripPlaceOfScan,
       tripSched,
+      landmark,
       date,
       time,
     } = req.body;
 
     const scannedQR = new ScannedQr({
-      passengerAccount: mongoose.Types.ObjectId(passengerAccount),
       tripType: tripType,
+      temperature: temperature,
+      tripPlaceOfScan: tripPlaceOfScan,
+      passengerAccount: mongoose.Types.ObjectId(passengerAccount),
       busAccount: mongoose.Types.ObjectId(busAccount),
       tripSched: mongoose.Types.ObjectId(tripSched),
+      landmark: mongoose.Types.ObjectId(landmark),
       date: date,
       time: time,
     });

@@ -11,21 +11,26 @@ const Passenger = require("../models/passenger.model");
 const BusDriver = require("../models/bus-driver.model");
 const TripSchedule = require("../models/trip-schedule.model");
 
-route.get("/reports/trips", async (req, res) => {
+route.get("/reports/trips/:bus_id", async (req, res) => {
   try {
-    const tripHistory = await ScannedQr
-      .find()
+    const { passengerAccount, tripType, busAccount, tripSched, date, time } =
+      req.body;
+    const tripHistory = await ScannedQr.find()
       .populate("busAccount")
       .populate("passengerAccount")
       .populate("tripSched");
     if (!tripHistory) {
-      return res.status(404).json({ message: "System Error: Failed to fetch data." })
+      return res
+        .status(404)
+        .json({ message: "System Error: Failed to fetch data." });
     } else {
-      res.status(200).json(tripHistory)
+      res.status(200).json(tripHistory);
     }
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: "System Error: Failed to fetch data." });
+    return res
+      .status(500)
+      .json({ message: "System Error: Failed to fetch data." });
   }
 });
 
@@ -37,53 +42,57 @@ route.get("/reports/:id", [getScannedQRMiddleware], (req, res) => {
 
 route.get("/reports/trip-history/:passenger_id", async (req, res) => {
   try {
-    const passengerId = mongoose.Types.ObjectId(req.params.passenger_id)
-    const passengerTripHistory = await ScannedQr
-      .find({ passengerAccount: passengerId })
+    const passengerId = mongoose.Types.ObjectId(req.params.passenger_id);
+    const passengerTripHistory = await ScannedQr.find({
+      passengerAccount: passengerId,
+    })
       .populate("busAccount")
       .populate("passengerAccount")
       .populate("tripSched");
     if (!passengerTripHistory) {
-      return res.status(404).json({ message: "System Error: Failed to fetch data." })
+      return res
+        .status(404)
+        .json({ message: "System Error: Failed to fetch data." });
     } else {
-      res.status(200).json(passengerTripHistory)
+      res.status(200).json(passengerTripHistory);
     }
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: "System Error: Failed to fetch data." });
+    return res
+      .status(500)
+      .json({ message: "System Error: Failed to fetch data." });
   }
 });
 
 route.get("/reports/bus-account/:busAccountId", async (req, res) => {
   try {
-    const busAccountId = mongoose.Types.ObjectId(req.params.busAccountId)
-    const busAccountTripHistory = await ScannedQr
-      .find({ busAccount: busAccountId })
+    const busAccountId = mongoose.Types.ObjectId(req.params.busAccountId);
+    const busAccountTripHistory = await ScannedQr.find({
+      busAccount: busAccountId,
+    })
       .populate("busAccount")
       .populate("passengerAccount")
       .populate("tripSched");
     if (!busAccountTripHistory) {
-      return res.status(404).json({ message: "System Error: Failed to fetch data." })
+      return res
+        .status(404)
+        .json({ message: "System Error: Failed to fetch data." });
     } else {
-      res.status(200).json(busAccountTripHistory)
+      res.status(200).json(busAccountTripHistory);
     }
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: "System Error: Failed to fetch data." });
+    return res
+      .status(500)
+      .json({ message: "System Error: Failed to fetch data." });
   }
 });
 
 // create a user
 route.post("/reports", async (req, res) => {
   try {
-    const {
-      passengerAccount,
-      tripType,
-      busAccount,
-      tripSched,
-      date,
-      time,
-    } = req.body;
+    const { passengerAccount, tripType, busAccount, tripSched, date, time } =
+      req.body;
 
     const scannedQR = new ScannedQr({
       passengerAccount: mongoose.Types.ObjectId(passengerAccount),
@@ -108,28 +117,24 @@ route.post("/reports", async (req, res) => {
 });
 
 // update a user
-route.put(
-  "/reports/:id",
-  [getScannedQRMiddleware],
-  async (req, res) => {
-    const { UserID, Email, Username, Password, Status } = req.body;
+route.put("/reports/:id", [getScannedQRMiddleware], async (req, res) => {
+  const { UserID, Email, Username, Password, Status } = req.body;
 
-    if (UserID) res.passenger._userID = UserID;
-    if (Email) res.passenger.email = Email;
-    if (Username) res.passenger.username = Username;
-    if (Password) res.passenger.password = Password;
-    if (Status !== null) res.passenger.status = Status;
-    res.passenger.dateModified = Date.now();
+  if (UserID) res.passenger._userID = UserID;
+  if (Email) res.passenger.email = Email;
+  if (Username) res.passenger.username = Username;
+  if (Password) res.passenger.password = Password;
+  if (Status !== null) res.passenger.status = Status;
+  res.passenger.dateModified = Date.now();
 
-    try {
-      const updatedpassenger = await res.passenger.save();
-      res.status(200).json(updatedpassenger);
-    } catch (error) {
-      console.error(error);
-      res.status(400).json({ error_message: error.message });
-    }
-  },
-);
+  try {
+    const updatedpassenger = await res.passenger.save();
+    res.status(200).json(updatedpassenger);
+  } catch (error) {
+    console.error(error);
+    res.status(400).json({ error_message: error.message });
+  }
+});
 
 async function getScannedQRMiddleware(req, res, next) {
   let scannedQR;

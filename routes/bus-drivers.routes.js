@@ -20,7 +20,6 @@ route.get("/bus-drivers", async (req, res) => {
 
 // get a bus-drivers
 route.get("/bus-drivers/:id", [getBusDriverMiddleware], (req, res) => {
-  console.log("user token", req.user);
   res.send(res.busDriver);
 });
 

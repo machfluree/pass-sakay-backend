@@ -18,6 +18,22 @@ const ScannedQrSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  temperature: {
+    type: Number,
+    required: true,
+  },
+  tripPlaceOfScan: {
+    type: String,
+    required: true,
+  },
+  landmark: {
+    type: String,
+    required: false,
+  },
+  seatNumber: {
+    type: String,
+    required: true,
+  },
   busAccount: {
     type: mongoose.Schema.ObjectId,
     ref: "BusDriver",

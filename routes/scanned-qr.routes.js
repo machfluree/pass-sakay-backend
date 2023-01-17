@@ -123,6 +123,7 @@ route.post("/scanned-qr", async (req, res) => {
       tripPlaceOfScan,
       tripSched,
       landmark,
+      seatNumber,
       date,
       time,
     } = req.body;
@@ -134,7 +135,8 @@ route.post("/scanned-qr", async (req, res) => {
       passengerAccount: mongoose.Types.ObjectId(passengerAccount),
       busAccount: mongoose.Types.ObjectId(busAccount),
       tripSched: mongoose.Types.ObjectId(tripSched),
-      landmark: mongoose.Types.ObjectId(landmark),
+      landmark: landmark,
+      seatNumber: seatNumber,
       date: date,
       time: time,
     });

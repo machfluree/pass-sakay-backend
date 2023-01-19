@@ -25,6 +25,19 @@ route.get("/passengers/:id", [getPassengerMiddleware], (req, res) => {
   console.log("get one passenger", req.passenger);
   res.send(res.passenger);
 });
+// const tripHistoryCount = await ScannedQr.countDocuments(query);
+//     res.status(200).json(tripHistoryCount)
+
+route.post("/passengers/get/count", async (req, res) => {
+  try {
+    const passengerCount = await Passenger.countDocuments();
+    res.status(200).json(passengerCount)
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({message: "Server failed to fetch data."});
+  }
+});
+
 
 // create a user
 route.post("/passengers", async (req, res) => {

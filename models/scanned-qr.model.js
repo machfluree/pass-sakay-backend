@@ -34,6 +34,10 @@ const ScannedQrSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
+  vaccineCode: {
+    type: String,
+    required: true,
+  },
   busAccount: {
     type: mongoose.Schema.ObjectId,
     ref: "BusDriver",

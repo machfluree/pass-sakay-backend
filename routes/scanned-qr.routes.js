@@ -31,11 +31,17 @@ route.get("/scanned-qr/reports", async (req, res) => {
     let query = {
       leave: { $exists: false }
     };
+    if (req.body.tripType) {
+      query.tripType = req.body.tripType
+    }
     if (req.body.busAccount) {
-      query.busAccount = req.body.busAccount
+      query.busAccount = mongoose.Types.ObjectId(req.body.busAccount)
     }
     if (req.body.passengerAccount) {
-      query.passengerAccount = req.body.passengerAccount
+      query.passengerAccount = mongoose.Types.ObjectId(req.body.passengerAccount)
+    }
+    if (req.body.tripSched) {
+      query.tripSched = mongoose.Types.ObjectId(req.body.tripSched)
     }
     if (req.body.today) {
       query.date = {
@@ -45,11 +51,10 @@ route.get("/scanned-qr/reports", async (req, res) => {
     }
     if (req.body.dateFrom && req.body.dateTo) {
       query.date = {
-        $gte: moment(req.body.dateTo).hours(0).minutes(0).milliseconds(0),
-        $lte: moment(req.body.dateTo).hours(59).minutes(59).milliseconds(59)
+        $gte: moment(req.body.dateFrom),
+        $lte: moment(req.body.dateTo)
       }
     }
-
     // return res.status(404).json({ message: query })
 
     const tripHistory = await ScannedQr
@@ -72,6 +77,48 @@ route.get("/scanned-qr/reports", async (req, res) => {
 route.get("/scanned-qr/:id", [getScannedQRMiddleware], (req, res) => {
   console.log("get one scaned qr", req.scannedQR);
   res.send(res.scannedQR);
+});
+
+route.post("/scanned-qr/get/count", async (req, res) => {
+  try {
+    let query = {};
+    if (!req.body.All) {
+      if (req.body.tripType) {
+        query.tripType = req.body.tripType
+      }
+      if (req.body.busAccount) {
+        query.busAccount = req.body.busAccount
+        // query.busAccount = mongoose.Types.ObjectId(req.body.busAccount)
+      }
+      if (req.body.passengerAccount) {
+        query.passengerAccount = req.body.passengerAccount
+        // query.passengerAccount = mongoose.Types.ObjectId(req.body.passengerAccount)
+      }
+      if (req.body.tripSched) {
+        query.tripSched = req.body.tripSched
+        // query.tripSched = mongoose.Types.ObjectId(req.body.tripSched)
+      }
+      if (req.body.today) {
+        query.date = {
+          $gte: moment(req.body.today).hours(0).minutes(0).milliseconds(0),
+          $lte: moment(req.body.today).hours(59).minutes(59).milliseconds(59)
+        }
+      }
+      if (req.body.dateFrom && req.body.dateTo) {
+        query.date = {
+          $gte: moment(req.body.dateFrom),
+          $lte: moment(req.body.dateTo)
+        }
+      }
+    } else {
+      query = {}
+    }
+    const tripHistoryCount = await ScannedQr.countDocuments(query);
+    res.status(200).json(tripHistoryCount)
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "System Error: Failed to fetch data." });
+  }
 });
 
 route.get("/scanned-qr/trip-history/:passenger_id", async (req, res) => {
@@ -124,11 +171,12 @@ route.post("/scanned-qr", async (req, res) => {
       tripSched,
       landmark,
       seatNumber,
+      vaccineCode,
       date,
       time,
     } = req.body;
 
-    const scannedQR = new ScannedQr({
+    const scannedQR = new ScannedQr({ //
       tripType: tripType,
       temperature: temperature,
       tripPlaceOfScan: tripPlaceOfScan,
@@ -137,6 +185,7 @@ route.post("/scanned-qr", async (req, res) => {
       tripSched: mongoose.Types.ObjectId(tripSched),
       landmark: landmark,
       seatNumber: seatNumber,
+      vaccineCode: vaccineCode,
       date: date,
       time: time,
     });

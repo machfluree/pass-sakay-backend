@@ -23,6 +23,16 @@ route.get("/bus-drivers/:id", [getBusDriverMiddleware], (req, res) => {
   res.send(res.busDriver);
 });
 
+route.post("/bus-drivers/get/count", async (req, res) => {
+  try {
+    const busCount = await BusDriver.countDocuments();
+    res.status(200).json(busCount);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({message: "Server failed to fetch data."});
+  }
+});
+
 // create a bus-driver
 route.post("/bus-drivers", async (req, res) => {
   try {

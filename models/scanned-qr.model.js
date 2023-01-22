@@ -14,30 +14,6 @@ const ScannedQrSchema = new mongoose.Schema({
     ref: "Passenger",
     required: true
   },
-  tripType: {
-    type: String,
-    required: true,
-  },
-  temperature: {
-    type: Number,
-    required: true,
-  },
-  tripPlaceOfScan: {
-    type: String,
-    required: true,
-  },
-  landmark: {
-    type: String,
-    required: false,
-  },
-  seatNumber: {
-    type: String,
-    required: true,
-  },
-  vaccineCode: {
-    type: String,
-    required: true,
-  },
   busAccount: {
     type: mongoose.Schema.ObjectId,
     ref: "BusDriver",
@@ -47,6 +23,30 @@ const ScannedQrSchema = new mongoose.Schema({
     type: mongoose.Schema.ObjectId,
     ref: "TripSchedule",
     required: true
+  },
+  tripType: {
+    type: String,
+    required: true,
+  },
+  landmark: {
+    type: String,
+    null: true,
+  },
+  tripPlaceOfScan: {
+    type: String,
+    required: true,
+  },
+  temperature: {
+    type: Number,
+    null: true,
+  },
+  seatNumber: {
+    type: String,
+    null: true,
+  },
+  vaccineCode: {
+    type: String,
+    null: true,
   },
   date: {
     type: Date,

@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const positivePassengerSchema = new mongoose.Schema({
+const positiveCaseSchema = new mongoose.Schema({
     passengerAccount: {
         type: mongoose.Schema.ObjectId,
         required: true,
@@ -26,14 +26,6 @@ const positivePassengerSchema = new mongoose.Schema({
         type: Date,
         null: true
     },
-    dateQuarantined: {
-        type: Date,
-        null: true
-    },
-    dateRecovered: {
-        type: Date,
-        null: true
-    },
     dateModified: {
         type: Date,
         default: Date.now(),
@@ -46,4 +38,4 @@ const positivePassengerSchema = new mongoose.Schema({
     },
 });
 
-module.exports = mongoose.model('PositivePassenger', positivePassengerSchema);
+module.exports = mongoose.model('PositiveCase', positiveCaseSchema);

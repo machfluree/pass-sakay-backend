@@ -12,6 +12,7 @@ const passengerRoute = require("./routes/passengers.routes");
 const busDriverRoute = require("./routes/bus-drivers.routes");
 const scannedQRRoute = require("./routes/scanned-qr.routes");
 const tripScheduleRoute = require("./routes/trip-schedule.routes");
+const positiveCasesRoute = require("./routes/positiveCases.routes");
 
 const app = express();
 app.use(cors());
@@ -25,6 +26,7 @@ app.use("/pass-sakay-v1/api", passengerRoute);
 app.use("/pass-sakay-v1/api", busDriverRoute);
 app.use("/pass-sakay-v1/api", scannedQRRoute);
 app.use("/pass-sakay-v1/api", tripScheduleRoute);
+app.use("/pass-sakay-v1/api", positiveCasesRoute);
 
 //error handler
 app.use(async (req, res, next) => {

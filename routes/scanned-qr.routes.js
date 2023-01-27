@@ -99,8 +99,8 @@ route.post("/scanned-qr/get/trip-history", async (req, res) => {
     }
     if (req.body.dateFrom && req.body.dateTo) {
       query.date = {
-        $gte: moment(req.body.dateFrom),
-        $lte: moment(req.body.dateTo)
+        $gte: moment(req.body.dateFrom).hours(0).minutes(0).milliseconds(0),
+        $lte: moment(req.body.dateTo).hours(59).minutes(59).milliseconds(59)
       }
     }
     // return res.status(404).json({ message: query })

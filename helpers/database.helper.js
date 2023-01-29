@@ -8,4 +8,4 @@ mongoose.connect(process.env.DATABASE_URL, {
 
 const database = mongoose.connection;
 database.on("error", (error) => console.error(error));
-database.once("open", () => console.log("Database connected."));
+database.once("open", () => console.log("=> Database connected."));

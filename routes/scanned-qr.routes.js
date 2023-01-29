@@ -121,6 +121,59 @@ route.post("/scanned-qr/get/trip-history", async (req, res) => {
   }
 });
 
+route.post("/scanned-qr/get/close-contacts", async (req, res) => {
+  try {
+    if (req.body.parameters && req.body.parameters.length > 0) {
+      const bodyParams = req.body.parameters;
+      const promise = new Promise((resolve, reject) => {
+        const result = [];
+        bodyParams.forEach(async (param, index, arr) => {
+          const resultItem = {
+            date: param.date,
+            tripSched: param.tripSched,
+            busAccount: param.busAccount,
+            closeContacts: []
+          }
+          let query = {
+            leave: { $exists: false }
+          };
+          if (param.busAccount) {
+            query.busAccount = mongoose.Types.ObjectId(param.busAccount._id)
+          }
+          if (param.passengerAccount) {
+            query.passengerAccount = { $ne: mongoose.Types.ObjectId(param.passengerAccount) } 
+          }
+          if (param.tripSched) {
+            query.tripSched = mongoose.Types.ObjectId(param.tripSched._id)
+          }
+          if (param.date) {
+            query.date = {
+              $gte: moment(param.date).hours(0).minutes(0).milliseconds(0),
+              $lte: moment(param.date).hours(59).minutes(59).milliseconds(59)
+            }
+          }
+          const tripHistory = await ScannedQr
+            .find(query)
+            .populate("passengerAccount");
+          if (tripHistory) {
+            resultItem.closeContacts = tripHistory;
+            result.push(resultItem);
+          }
+          if (index === bodyParams.length -1) resolve(result);
+        });
+      });
+      promise.then((data) => {
+        res.status(200).json(data);
+      })
+    }
+    
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: "System Error: Failed to fetch data." });
+  }
+});
+
+
 // get a user
 route.get("/scanned-qr/:id", [getScannedQRMiddleware], (req, res) => {
   console.log("get one scaned qr", req.scannedQR);

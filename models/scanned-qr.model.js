@@ -26,15 +26,26 @@ const ScannedQrSchema = new mongoose.Schema({
   },
   tripType: {
     type: String,
-    required: true,
+    // required: true,
+    null: true,
   },
   landmark: {
     type: String,
     null: true,
   },
+  landmarkOut: {
+    type: String,
+    null: true,
+    default: null,
+  },
   tripPlaceOfScan: {
     type: String,
-    required: true,
+    null: true,
+  },
+  tripPlaceOfScanOut: {
+    type: String,
+    null: true,
+    default: null
   },
   temperature: {
     type: Number,
@@ -55,8 +66,32 @@ const ScannedQrSchema = new mongoose.Schema({
   },
   time: {
     type: Date,
-    required: true,
-    default: Date.now()
+    // required: true,
+    null: true,
+    // default: Date.now()
+  },
+  timeIn: {
+    type: Date,
+    // required: true,
+    null: true,
+    default: null
+  },
+  timeInStatus: {
+    type: Boolean,
+    null: true,
+    default: null
+  },
+  timeOut: {
+    type: Date,
+    // required: true,
+    null: true,
+    default: null
+  },
+  timeOutStatus: {
+    type: Boolean,
+    // required: true,
+    null: true,
+    default: null
   },
 });
 
